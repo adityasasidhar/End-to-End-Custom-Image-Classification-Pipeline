@@ -1,23 +1,62 @@
-from dataset import *
-from model import Model
+import torch
 import torch.nn as nn
+from dataset import get_dataloaders
+from model import Model
 
+# Device
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("Using device:", device)
 
+# Data
 train_loader, test_loader, classes = get_dataloaders()
 
-model = Model().to(device)
+# Model
+model = Model(
+    num_classes=len(classes),
+    pretrained=True,
+    freeze_backbone=True
+).to(device)
 
+# Loss and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(
     filter(lambda p: p.requires_grad, model.parameters()),
     lr=1e-3
 )
 
-for epoch in range(10):
+# Scheduler
+scheduler = torch.optim.lr_scheduler.StepLR(
+    optimizer, step_size=5, gamma=0.1
+)
+
+def evaluate(model, loader):
+    model.eval()
+    correct = 0
+    total = 0
+
+    with torch.no_grad():
+        for images, labels in loader:
+            images = images.to(device)
+            labels = labels.to(device)
+
+            outputs = model(images)
+            _, preds = torch.max(outputs, 1)
+            correct += (preds == labels).sum().item()
+            total += labels.size(0)
+
+    return correct / total
+
+
+best_acc = 0.0
+num_epochs = 10
+
+for epoch in range(num_epochs):
     model.train()
+    running_loss = 0.0
+
     for images, labels in train_loader:
-        images, labels = images.to(device), labels.to(device)
+        images = images.to(device)
+        labels = labels.to(device)
 
         optimizer.zero_grad()
         outputs = model(images)
@@ -25,4 +64,30 @@ for epoch in range(10):
         loss.backward()
         optimizer.step()
 
-        print(f"Epoch {epoch+1}, Loss: {loss.item():.4f}")
+        running_loss += loss.item()
+
+    avg_loss = running_loss / len(train_loader)
+    val_acc = evaluate(model, test_loader)
+
+    if val_acc > best_acc:
+        best_acc = val_acc
+        torch.save(model.state_dict(), "best_model.pth")
+
+    print(
+        f"Epoch [{epoch+1}/{num_epochs}] "
+        f"Loss: {avg_loss:.4f} "
+        f"Val Acc: {val_acc:.4f}"
+    )
+
+    if epoch == 4:
+        for param in model.model.layer4.parameters():
+            param.requires_grad = True
+
+        optimizer = torch.optim.Adam(
+            filter(lambda p: p.requires_grad, model.parameters()),
+            lr=1e-4
+        )
+
+    scheduler.step()
+
+print("Training complete. Best Val Acc:", best_acc)
