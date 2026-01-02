@@ -1,0 +1,17 @@
+# PyTorch
+*.pth
+*.pt
+checkpoints/
+
+# Virtual Environment
+.venv/
+
+# IDE
+.idea/
+
+# Dataset
+data/cifar-10-batches-py/
+data/cifar-10-python.tar.gz
+
+# Pycaches
+src/__pycache__/
