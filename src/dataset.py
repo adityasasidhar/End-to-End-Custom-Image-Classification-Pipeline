@@ -23,7 +23,13 @@ test_transform = transforms.Compose([
     ),
 ])
 
-def get_dataloaders():
+def get_dataloaders(cfg):
+
+    batch_size = cfg["data"]["batch_size"]
+    num_workers = cfg["data"]["num_workers"]
+    root = cfg["data"]["root"]
+
+    pin = torch.cuda.is_available()
     train_dataset = datasets.CIFAR10(
         root="../data",
         train=True,

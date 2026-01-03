@@ -2,13 +2,16 @@ import torch
 import torch.nn as nn
 from dataset import get_dataloaders
 from model import Model
+from utils import load_config, set_seed, get_device
 
-# Device
+cfg = load_config("../config/default.yaml")
+set_seed(cfg["runtime"]["seed"])
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 print("Using device:", device)
 
-# Data
-train_loader, test_loader, classes = get_dataloaders()
+train_loader, test_loader, classes = get_dataloaders(cfg)
 
 # Model
 model = Model(
