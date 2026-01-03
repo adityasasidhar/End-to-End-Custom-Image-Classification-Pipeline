@@ -4,14 +4,14 @@ from dataset import get_dataloaders
 from model import Model
 from utils import load_config, set_seed, get_device
 
-cfg = load_config("../config/default.yaml")
+cfg = load_config()
 set_seed(cfg["runtime"]["seed"])
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 print("Using device:", device)
 
-train_loader, test_loader, classes = get_dataloaders(cfg)
+train_loader, test_loader, classes = get_dataloaders()
 
 # Model
 model = Model(

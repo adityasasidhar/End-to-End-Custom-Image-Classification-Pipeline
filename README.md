@@ -10,22 +10,40 @@ As stated in the project description: *"This is a fun learning attempt at buildi
 - **CIFAR-10 Dataset**: Integrated data loading with standard augmentations (Random Crop, Horizontal Flip).
 - **Progressive Unfreezing**: Training starts with a frozen backbone, then gradually unfreezes later layers (`layer4`, then `layer3`) to fine-tune performance.
 - **Inference Script**: Easy-to-use script for predicting the class of any local image.
+- **Config-Driven**: Manage hyperparameters easily via YAML files.
 
 ## 📁 Project Structure
 
 ```text
 .
-├── configs/            # Configuration files (if any)
-├── data/               # Dataset storage
+├── configs/
+│   └── default.yaml    # Main configuration file
+├── data/               # CIFAR-10 dataset (auto-downloaded)
+│   ├── cifar-10-batches-py/
+│   └── cifar-10-python.tar.gz
 ├── src/
-│   ├── dataset.py      # CIFAR-10 DataLoaders and Transforms
-│   ├── infer.py        # Inference script for single images
-│   ├── model.py        # Custom Model definition
-│   ├── training.py     # Main training loop with unfreezing logic
-│   └── resnet_architecture.py # Utility to inspect base ResNet
-├── pyproject.toml      # Project dependencies and metadata
-└── uv.lock             # Lockfile for dependencies
+│   ├── dataset.py      # Data loading and augmentation
+│   ├── eval.py         # Performance evaluation
+│   ├── infer.py        # Single image prediction
+│   ├── model.py        # ResNet-18 modifications
+│   ├── training.py     # Training & progressive unfreezing
+│   ├── utils.py        # Shared utilities
+│   ├── resnet_architecture.py # Architecture inspector
+│   ├── image.jpg       # Sample image for inference
+│   └── model.pth       # Saved model weights
+├── LICENSE             # MIT License
+├── pyproject.toml      # Project metadata & dependencies
+├── README.md           # You are here!
+└── uv.lock             # Dependency lockfile
 ```
+
+## ⚙️ Configuration
+
+The project uses YAML files for configuration. You can modify parameters in `configs/default.yaml`:
+- **Data**: Batch size, number of workers, data path.
+- **Model**: Backbone selection, pre-training, freezing options.
+- **Training**: Epochs, learning rates, unfreezing schedule.
+- **Runtime**: Device selection (CPU/CUDA) and random seed.
 
 ## 🛠️ Installation
 
@@ -53,10 +71,17 @@ uv run python src/training.py
 ```
 
 The script will:
+- Train according to parameters in `configs/default.yaml`.
 - Download the CIFAR-10 dataset to the `data/` folder if not present.
-- Train for 15 epochs.
-- Progressively unfreeze layers at epoch 5 and 11.
 - Save the best model weights to `model.pth`.
+
+### Evaluation
+
+To evaluate the trained model on the test set:
+
+```bash
+uv run python src/eval.py
+```
 
 ### Inference
 

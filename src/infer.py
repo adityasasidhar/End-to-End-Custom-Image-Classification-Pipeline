@@ -3,6 +3,9 @@ import torchvision.transforms as transforms
 from PIL import Image
 from dataset import get_dataloaders
 from model import Model
+from utils import load_config
+
+cfg = load_config()
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

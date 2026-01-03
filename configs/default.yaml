@@ -1,6 +1,6 @@
 # Data
 data:
-  root: "../data"
+  root: "data"
   batch_size: 64
   num_workers: 2
 

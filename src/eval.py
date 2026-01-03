@@ -2,7 +2,7 @@ import torch
 from torch.utils.data import DataLoader
 from dataset import get_dataloaders
 from model import Model
-
+from utils import load_config
 
 def evaluate_model(model, dataloader: DataLoader, device):
     model.eval()
@@ -25,6 +25,7 @@ def evaluate_model(model, dataloader: DataLoader, device):
 
 
 if __name__ == "__main__":
+    cfg = load_config()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Load data
