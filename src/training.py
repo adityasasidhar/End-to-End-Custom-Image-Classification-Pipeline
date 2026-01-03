@@ -48,7 +48,7 @@ def evaluate(model, loader):
 
 
 best_acc = 0.0
-num_epochs = 10
+num_epochs = 15
 
 for epoch in range(num_epochs):
     model.train()
@@ -71,7 +71,7 @@ for epoch in range(num_epochs):
 
     if val_acc > best_acc:
         best_acc = val_acc
-        torch.save(model.state_dict(), "best_model.pth")
+        torch.save(model.state_dict(), "model.pth")
 
     print(
         f"Epoch [{epoch+1}/{num_epochs}] "
@@ -81,6 +81,10 @@ for epoch in range(num_epochs):
 
     if epoch == 4:
         for param in model.model.layer4.parameters():
+            param.requires_grad = True
+
+    if epoch == 10:
+        for param in model.model.layer3.parameters():
             param.requires_grad = True
 
         optimizer = torch.optim.Adam(
