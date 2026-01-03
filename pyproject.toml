@@ -1,7 +1,11 @@
 [project]
 name = "customimageclassificationpipeline"
 version = "0.1.0"
-description = "Add your description here"
+description = "This is a fun learning attempt at building custom models, I was bored and the year was new, so i thought why not ?? hehehehe"
+authors = [
+    { name = "Aditya Sasidhar" }
+]
+license = { text = "MIT" }
 requires-python = ">=3.12"
 dependencies = [
     "numpy>=2.2.6",
